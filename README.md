@@ -2,7 +2,6 @@
 
 **NOTICE: THIS IS UNDER ACTIVE DEVELOPMENT, USE AT YOUR OWN RISK**
 
-This repository contains the source code for the TinyWheel.
 
 The TinyWheel allows you to check your battery, speed and some other stats from your wheel using a ESP32 device.
 
