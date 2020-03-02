@@ -29,7 +29,7 @@ cd /path/to/TinyWheel
 code .
 ```
 
-The first steep to flash the *TinyWheel* firmware is to configure your wheel.
+The first step to flash the *TinyWheel* firmware is to configure your wheel.
 
 Copy the file `.env.dist` to `.env`
 ```shell
@@ -56,7 +56,7 @@ This key is used to unlock your wheel, without this *TinyWheel* won't be able to
 
 **Wheel info**
 
-The first step to generate they *key* is to retreive some information from your wheel.
+The first step to generate the *key* is to retreive some information from your wheel.
 While running on info mode the *TinyWheel* will scan for your wheel and retreive the name, bluetooth address and the secret that you need to generate the *key*.
 
 Run the following command to flash *TinyWheel* in info mode
@@ -102,10 +102,10 @@ python activation.py
   # WHEEL_DEVICE_API_KEY : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   # WHEEL_DEVICE_KEY     : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
-- _The script is going to ask for confirmation before it send the request, make sure you have the proper values in place and entre `y`_
+- _The script is going to ask for confirmation before it send the request, make sure you have the proper values in place and enter `y`_
 - _Your ip address can get blocked if you continue to invoke the api with invalid values_
 - _Keep your `WHEEL_DEVICE_KEY` and other configurations in a safe place you might need then again in the future if you are flashing the firmware again_
-- _This steep in only required if your are using a Pint or XR with +4210 hardware. With other versions of the gemini you can compute the key but this is not yet supported here. [See](https://github.com/TomasHubelbauer/onewheel-web-bluetooth#how-does-the-unlock-flow-go)_
+- _This step in only required if your are using a Pint or XR with +4210 hardware. With other versions of the gemini you can compute the key but this is not yet supported here. [See](https://github.com/TomasHubelbauer/onewheel-web-bluetooth#how-does-the-unlock-flow-go)_
 
 Now you have the *key* and you can flash the *TinyWheel* firmware to your device.
 Update the `.env` file with the `WHEEL_DEVICE_KEY` you got from `activation.py`
