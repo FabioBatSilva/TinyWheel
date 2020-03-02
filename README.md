@@ -2,6 +2,7 @@
 
 **NOTICE: THIS IS UNDER ACTIVE DEVELOPMENT, USE AT YOUR OWN RISK**
 
+![image](images/pinmap.png)
 
 The TinyWheel allows you to check your battery, speed and some other stats from your wheel using a ESP32 device.
 
