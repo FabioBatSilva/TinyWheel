@@ -1,0 +1,19 @@
+{
+  "name": "LibWheel",
+  "version": "0.1.0",
+  "keywords": "wheel, ble, bluetooth",
+  "description": "Arduino that provides a interface to talk to your wheel.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FabioBatSilva/LibWheel.git"
+  },
+  "authors": {
+    "name": "Fabio B. Silva",
+    "email": "fabio.bat.silva@gmail.com"
+  },
+  "exclude": [
+    "test"
+  ],
+  "frameworks": "arduino",
+  "platforms": "espressif32"
+}
