@@ -161,11 +161,11 @@ namespace ViewTest
 
         previusChange = viewPageMock1.lastChange;
 
-        // update c1
-        Wheel::values()->put("c1", c1v2, millis());
-
         // force delay
         delay(1);
+
+        // update c1
+        Wheel::values()->put("c1", c1v2, millis());
 
         // call update again time, now there are changes
         view.update(&viewPageMock1, Wheel::values());
