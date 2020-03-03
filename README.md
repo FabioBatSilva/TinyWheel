@@ -1,5 +1,5 @@
 # TinyWheel
-![PlatformIO](https://github.com/FabioBatSilva/TinyWheel/workflows/PlatformIO/badge.svg?branch=master)
+![PlatformIO/Development](https://github.com/FabioBatSilva/TinyWheel/workflows/PlatformIO/badge.svg?branch=development)
 
 
 **NOTICE: THIS IS UNDER ACTIVE DEVELOPMENT, USE AT YOUR OWN RISK**
