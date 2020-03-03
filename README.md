@@ -1,4 +1,6 @@
 # TinyWheel
+![PlatformIO](https://github.com/FabioBatSilva/TinyWheel/workflows/PlatformIO/badge.svg?branch=master)
+
 
 **NOTICE: THIS IS UNDER ACTIVE DEVELOPMENT, USE AT YOUR OWN RISK**
 
