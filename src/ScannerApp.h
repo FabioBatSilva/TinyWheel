@@ -7,7 +7,7 @@
 #include <WheelDevice.h>
 
 template<class D>
-class InfoApp
+class ScannerApp
 {
     protected:
         struct UI
@@ -25,7 +25,7 @@ class InfoApp
 
         static WheelDeviceScanner scanner;
 
-        static InfoApp<D>::UI ui;
+        static ScannerApp<D>::UI ui;
 
         static std::string key;
 

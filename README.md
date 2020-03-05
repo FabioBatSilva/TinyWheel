@@ -56,18 +56,18 @@ Before you can flash *TinyWheel* to your device you need to generate a key for y
 
 This key is used to unlock your wheel, without this *TinyWheel* won't be able to connect to your wheel.
 
-**Wheel info**
+**Wheel scanner**
 
 The first step to generate the *key* is to retreive some information from your wheel.
-While running on info mode the *TinyWheel* will scan for your wheel and retreive the name, bluetooth address and the secret that you need to generate the *key*.
+While running on scanner mode the *TinyWheel* will look for your wheel and retreive the name, bluetooth address and the secret that you need to generate the *key*.
 
-Run the following command to flash *TinyWheel* in info mode
+Run the following command to flash *TinyWheel* in scanner mode
 
 ```shell
-APP=APP_INFO platformio run -t upload -e twristband
+APP=APP_SCANNER platformio run -t upload -e twristband
 ```
 
-After the firmware is flashed in `APP_INFO` mode open the serial monitor to retreive the the following values.
+After the firmware is flashed in `APP_SCANNER` mode open the serial monitor to retreive the the following values.
 `WHEEL_DEVICE_NAME`
 `WHEEL_DEVICE_ADDRESS`
 `WHEEL_DEVICE_API_KEY`
@@ -85,7 +85,7 @@ platformio device monitor --baud 115200
 ```
 Copy the values from your serial monitor and update `.env` accordingly.
 
-**Wheel key**
+**Wheel activation**
 
 The last step to generate the *key* is using the activation API from FM.
 
@@ -146,7 +146,7 @@ If everyting was sucessfull the project will compile and upload to the wristband
 - [ ] XR support
 - [ ] Support for Imperial Units
 - [ ] Display wristband battery
-- [ ] Invoke activation from TinyWheel on APP_INFO mode
+- [ ] Invoke activation from TinyWheel on APP_SCANNER mode
 - [ ] Display info about the current ride
 - [ ] Alerts on low battery and max speed
 - [ ] Turn lights on/off
