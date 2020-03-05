@@ -39,10 +39,6 @@ template<> void MonitorApp<TFT_eSPI>::loop() {
     uint8_t page = MonitorApp<TFT_eSPI>::page;
     MonitorApp<TFT_eSPI>::UI* ui = &MonitorApp<TFT_eSPI>::ui;
 
-    if (status != Wheel::Status::CONNECTED && button.isPressed()) {
-        return;
-    }
-
     if (Wheel::connectFails() > WHEEL_MAX_CONNECT_FAILURE) {
         log_w("Failed to connect %d times.", WHEEL_MAX_CONNECT_FAILURE);
         sleep();
@@ -62,20 +58,21 @@ template<> void MonitorApp<TFT_eSPI>::loop() {
         return;
     }
 
-    if (page == VIEW_PAGE_SPEED) {
-        ui->view.update(&ui->viewPageSpeed, values);
-
-        return;
+    switch (page)
+    {
+        case VIEW_PAGE_SPEED:
+            ui->view.update(&ui->viewPageSpeed, values);
+            break;
+        case VIEW_PAGE_BATTERY:
+            ui->view.update(&ui->viewPageBattery, values);
+            break;
+        case VIEW_PAGE_HOME:
+            ui->view.draw(&ui->viewPageHome);
+            break;
+        default:
+            log_e("Invalid page %d.", page);
+            break;
     }
 
-    if (page == VIEW_PAGE_BATTERY) {
-        ui->view.update(&ui->viewPageBattery, values);
-
-        return;
-    }
-
-    if (page == VIEW_PAGE_HOME) {
-        ui->view.draw(&ui->viewPageHome);
-        return;
-    }
+    delay(100);
 };
