@@ -1,12 +1,12 @@
 #include <Wheel.h>
 #include <TFT_eSPI.h>
-#include <InfoApp.h>
+#include <ScannerApp.h>
 #include <EasyButton.h>
 
-template<> void InfoApp<TFT_eSPI>::setup() {
-    log_i("Setup T-Wristband Info");
+template<> void ScannerApp<TFT_eSPI>::setup() {
+    log_i("Setup T-Wristband Scanner");
 
-    InfoApp<TFT_eSPI>::UI* ui = &InfoApp<TFT_eSPI>::ui;
+    ScannerApp<TFT_eSPI>::UI* ui = &ScannerApp<TFT_eSPI>::ui;
     static EasyButton button(TP_PIN_PIN, 80, true, false);
 
     ui->display.init();
@@ -19,6 +19,6 @@ template<> void InfoApp<TFT_eSPI>::setup() {
     button.begin();
 
     button.onPressedFor(3000, []() {
-        InfoApp<TFT_eSPI>::sleep();
+        ScannerApp<TFT_eSPI>::sleep();
     });
 };

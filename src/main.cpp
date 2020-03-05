@@ -16,9 +16,9 @@
 #if APP == APP_MONITOR
     #include <MonitorApp.h>
     #define APP_TYPE MonitorApp
-#elif APP == APP_INFO
-    #include <InfoApp.h>
-    #define APP_TYPE InfoApp
+#elif APP == APP_SCANNER
+    #include <ScannerApp.h>
+    #define APP_TYPE ScannerApp
 #else
     #error "Unknown APP."
 #endif

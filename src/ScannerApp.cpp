@@ -2,23 +2,23 @@
 #include <macros.h>
 
 #include <Wheel.h>
-#include <InfoApp.h>
+#include <ScannerApp.h>
 #include <WheelCharacteristic.h>
 
 #if DEVICE_UI == DEVICE_UI_TFT
 
 #include <TFT_eSPI.h>
 
-template<> std::string InfoApp<TFT_eSPI>::key = std::string();
-template<> TFT_eSPI InfoApp<TFT_eSPI>::UI::display = TFT_eSPI();
-template<> WheelDeviceScanner InfoApp<TFT_eSPI>::scanner = WheelDeviceScanner();
-template<> View<TFT_eSPI> InfoApp<TFT_eSPI>::UI::view = View<TFT_eSPI>(&InfoApp<TFT_eSPI>::UI::display);
+template<> std::string ScannerApp<TFT_eSPI>::key = std::string();
+template<> TFT_eSPI ScannerApp<TFT_eSPI>::UI::display = TFT_eSPI();
+template<> WheelDeviceScanner ScannerApp<TFT_eSPI>::scanner = WheelDeviceScanner();
+template<> View<TFT_eSPI> ScannerApp<TFT_eSPI>::UI::view = View<TFT_eSPI>(&ScannerApp<TFT_eSPI>::UI::display);
 
-template<> ViewPageHome<TFT_eSPI> InfoApp<TFT_eSPI>::UI::viewPageHome = ViewPageHome<TFT_eSPI>();
-template<> ViewPageSleep<TFT_eSPI> InfoApp<TFT_eSPI>::UI::viewPageSleep = ViewPageSleep<TFT_eSPI>();
-template<> ViewPageConnecting<TFT_eSPI> InfoApp<TFT_eSPI>::UI::viewPageConnecting = ViewPageConnecting<TFT_eSPI>();
+template<> ViewPageHome<TFT_eSPI> ScannerApp<TFT_eSPI>::UI::viewPageHome = ViewPageHome<TFT_eSPI>();
+template<> ViewPageSleep<TFT_eSPI> ScannerApp<TFT_eSPI>::UI::viewPageSleep = ViewPageSleep<TFT_eSPI>();
+template<> ViewPageConnecting<TFT_eSPI> ScannerApp<TFT_eSPI>::UI::viewPageConnecting = ViewPageConnecting<TFT_eSPI>();
 
-template<> void InfoApp<TFT_eSPI>::onScanResult(std::vector<WheelInfo> result) {
+template<> void ScannerApp<TFT_eSPI>::onScanResult(std::vector<WheelInfo> result) {
     log_i("Found %d wheels", result.size());
 
     if (result.empty()) {
@@ -48,12 +48,12 @@ template<> void InfoApp<TFT_eSPI>::onScanResult(std::vector<WheelInfo> result) {
     }
 }
 
-template<> void InfoApp<TFT_eSPI>::init() {
-    log_i("Init TinyWheel Info");
+template<> void ScannerApp<TFT_eSPI>::init() {
+    log_i("Init TinyWheel Scanner");
 
-    BLEDevice::init("TinyWheel info");
+    BLEDevice::init("TinyWheel Scanner");
 
-    InfoApp<TFT_eSPI>::UI* ui = &InfoApp<TFT_eSPI>::ui;
+    ScannerApp<TFT_eSPI>::UI* ui = &ScannerApp<TFT_eSPI>::ui;
 
     ui->view.draw(&ui->viewPageHome);
     delay(2000);
@@ -61,16 +61,16 @@ template<> void InfoApp<TFT_eSPI>::init() {
     log_i("Scanning...");
     ui->view.draw(&ui->viewPageConnecting);
 
-    scanner.scan(InfoApp<TFT_eSPI>::onScanResult);
+    scanner.scan(ScannerApp<TFT_eSPI>::onScanResult);
 
     log_i("Done...");
     ui->view.draw(&ui->viewPageHome);
 };
 
-template<> void InfoApp<TFT_eSPI>::sleep() {
+template<> void ScannerApp<TFT_eSPI>::sleep() {
     log_i("Going to sleep");
 
-    InfoApp<TFT_eSPI>::UI* ui = &InfoApp<TFT_eSPI>::ui;
+    ScannerApp<TFT_eSPI>::UI* ui = &ScannerApp<TFT_eSPI>::ui;
 
     ui->view.draw(&ui->viewPageSleep);
     delay(2000);
@@ -82,10 +82,10 @@ template<> void InfoApp<TFT_eSPI>::sleep() {
     esp_deep_sleep_start();
 };
 
-template<> void InfoApp<TFT_eSPI>::loop() {
+template<> void ScannerApp<TFT_eSPI>::loop() {
     delay(10000);
 
-    InfoApp<TFT_eSPI>::sleep();
+    ScannerApp<TFT_eSPI>::sleep();
 };
 
 #endif
