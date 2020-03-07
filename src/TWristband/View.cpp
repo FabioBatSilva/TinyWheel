@@ -108,14 +108,6 @@ void drawBatteryValue(TFT_eSPI* display, uint8_t percentage) {
     const uint8_t w = 40;
     const uint8_t h = 80;
 
-    display->fillRect(
-        0,
-        y,
-        TFT_WIDTH,
-        TFT_HEIGHT - y,
-        TFT_BLACK
-    );
-
     const uint8_t margin = 2;
     const uint8_t barWidth = w - 2 * margin;
     const uint8_t barHeight = h - 2 * margin;
@@ -130,6 +122,14 @@ void drawBatteryValue(TFT_eSPI* display, uint8_t percentage) {
     if (percentage < 15) {
         color = TFT_RED;
     }
+
+    display->fillRect(
+        0,
+        y,
+        TFT_WIDTH,
+        TFT_HEIGHT - y,
+        TFT_BLACK
+    );
 
     display->drawRoundRect(x, y, w, h, 3, TFT_GOLD);
 
@@ -153,7 +153,7 @@ void drawBatteryValue(TFT_eSPI* display, uint8_t percentage) {
 
 void drawIcon(TFT_eSPI* display, const uint8_t *bitmap) {
     display->drawBitmap(
-        (TFT_WIDTH - VIEW_TWRISTBAND_ICON_WIDTH) / 2,
+        (TFT_WIDTH / 2) - (VIEW_TWRISTBAND_ICON_WIDTH / 2),
         0,
         bitmap,
         VIEW_TWRISTBAND_ICON_WIDTH,
@@ -267,19 +267,52 @@ template <> bool ViewPageHome<TFT_eSPI>::draw(TFT_eSPI* display) {
         10 + VIEW_TWRISTBAND_ICON_HEIGHT
     );
 
-    char buffer[5];
-    float boardVoltage = BoardUtils::getVoltage();
+    const uint8_t voltagePerc = BoardUtils::getBatteryPercentage();
+    const uint8_t voltageW = 30;
+    const uint8_t voltageH = 20;
 
-    sprintf(buffer, "%.2fv", boardVoltage);
+    uint32_t voltageColor = TFT_GREEN;
 
-    log_d("Board voltage : %s", buffer);
+    const uint8_t voltageX = 5;
+    const uint8_t voltageY = TFT_HEIGHT - 20;
 
-    display->setTextSize(1);
-    display->setTextColor(TFT_RED, TFT_BLACK);
-    display->drawString(
-        String(buffer),
-        10,
-        TFT_HEIGHT - 10
+    const uint8_t voltageMargin = 2;
+    const uint8_t voltageBarWidth = voltageW - 2 * voltageMargin;
+    const uint8_t voltageBarHeight = voltageH - 2 * voltageMargin;
+
+    log_d("Board Percentage : %s", voltagePerc);
+
+    if (voltagePerc < 30) {
+        voltageColor = TFT_YELLOW;
+    }
+
+    if (voltagePerc < 15) {
+        voltageColor = TFT_RED;
+    }
+
+    display->fillRect(
+        0,
+        voltageY,
+        voltageW,
+        voltageH,
+        TFT_BLACK
+    );
+
+    display->drawRoundRect(
+        voltageX,
+        voltageY,
+        voltageW,
+        voltageH,
+        3,
+        TFT_GOLD
+    );
+
+    display->fillRect(
+        voltageX + voltageMargin,
+        voltageY + voltageMargin,
+        voltageBarWidth * voltagePerc / 100.0,
+        voltageBarHeight,
+        voltageColor
     );
 
     return true;
