@@ -43,6 +43,10 @@ class MonitorApp
 
         static uint8_t page;
 
+        static void preLoop();
+
+        static void startDeepSleep();
+
     public:
         static void setup();
 
