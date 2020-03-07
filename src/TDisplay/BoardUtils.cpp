@@ -1,6 +1,8 @@
 #include <TFT_eSPI.h>
 #include <BoardUtils.h>
 
+BoardUtilsBattery BoardUtils::battery(ADC_PIN);
+
 template<> void BoardUtils::setup<TFT_eSPI>(TFT_eSPI* display) {
     display->init();
     display->setRotation(0);

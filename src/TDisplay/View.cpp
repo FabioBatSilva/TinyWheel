@@ -1,6 +1,8 @@
 #if DEVICE == DEVICE_TDISPLAY
 
 #include <View.h>
+#include <BoardUtils.h>
+
 #include <TFT_eSPI.h>
 
 #define VIEW_TDISPLAY_ICON_WIDTH 100
@@ -373,47 +375,55 @@ void drawIcon(TFT_eSPI* display, const uint8_t *bitmap) {
     );
 };
 
-void drawVerticalText(TFT_eSPI* display, std::string text, int32_t x, int32_t y, int32_t spaces = 25) {
+void drawVerticalText(TFT_eSPI* display, std::string text, int32_t x, int32_t y, int32_t spaces = 30) {
     for (size_t i = 0; i < text.length(); i++) {
         display->drawChar(text.at(i), x, y + (spaces * i));
     }
 };
 
-template <> void ViewPageSpeed<TFT_eSPI>::draw(TFT_eSPI* display) {
+template <> bool ViewPageSpeed<TFT_eSPI>::draw(TFT_eSPI* display) {
     display->fillScreen(TFT_BLACK);
 
     drawIcon(display, VIEW_TDISPLAY_ICON_BMP_SPEED);
 
     drawSpeedValue(display, 0);
+
+    return true;
 };
 
-template <> void ViewPageSpeed<TFT_eSPI>::update(TFT_eSPI* display, Wheel::Values* values) {
+template <> bool ViewPageSpeed<TFT_eSPI>::update(TFT_eSPI* display, Wheel::Values* values) {
     WheelValue* value = values->get(WHEEL_CHARACTERISTIC_SPEED_RPM_UUID);
     uint8_t speed = value->format(&WheelValue::FORMATTER_KILOMETERS_PER_HOUR);
 
     log_d("speed : %u", speed);
 
     drawSpeedValue(display, speed);
+
+    return true;
 };
 
-template <> void ViewPageBattery<TFT_eSPI>::draw(TFT_eSPI* display) {
+template <> bool ViewPageBattery<TFT_eSPI>::draw(TFT_eSPI* display) {
     display->fillScreen(TFT_BLACK);
 
     drawIcon(display, VIEW_TDISPLAY_ICON_BMP_BATTERY);
 
     drawBatteryValue(display, 0);
+
+    return true;
 };
 
-template <> void ViewPageBattery<TFT_eSPI>::update(TFT_eSPI* display, Wheel::Values* values) {
+template <> bool ViewPageBattery<TFT_eSPI>::update(TFT_eSPI* display, Wheel::Values* values) {
     WheelValue* value = values->get(WHEEL_CHARACTERISTIC_BATTERY_REMAINING_UUID);
     uint8_t percentage = value->format(&WheelValue::FORMATTER_BATTERY_REMAINING);
 
     log_d("percentage : %u", percentage);
 
     drawBatteryValue(display, percentage);
+
+    return true;
 };
 
-template <> void ViewPageConnecting<TFT_eSPI>::draw(TFT_eSPI* display) {
+template <> bool ViewPageConnecting<TFT_eSPI>::draw(TFT_eSPI* display) {
     display->fillScreen(TFT_BLACK);
 
     drawIcon(display, VIEW_TDISPLAY_ICON_BMP_CONNECTING);
@@ -439,12 +449,14 @@ template <> void ViewPageConnecting<TFT_eSPI>::draw(TFT_eSPI* display) {
             (bucket == i) ? TFT_RED : TFT_YELLOW
         );
     }
+
+    return true;
 };
 
-template <> void ViewPageHome<TFT_eSPI>::draw(TFT_eSPI* display) {
-    // draw it every 10s
-    if (this->lastChange > millis() - 10000) {
-        return;
+template <> bool ViewPageHome<TFT_eSPI>::draw(TFT_eSPI* display) {
+    // draw it every ~10s
+    if (this->lastChange > 0 && millis() - this->lastChange < 10000) {
+        return false;
     }
 
     display->fillScreen(TFT_BLACK);
@@ -458,18 +470,35 @@ template <> void ViewPageHome<TFT_eSPI>::draw(TFT_eSPI* display) {
         display,
         "Tiny",
         (TFT_WIDTH / 2) - 20,
-        VIEW_TDISPLAY_ICON_HEIGHT + 15
+        VIEW_TDISPLAY_ICON_HEIGHT + 10
     );
 
     drawVerticalText(
         display,
         "Wheel",
         (TFT_WIDTH / 2) + 10,
-        VIEW_TDISPLAY_ICON_HEIGHT + 15
+        VIEW_TDISPLAY_ICON_HEIGHT + 10
     );
+
+    char buffer[5];
+    float boardVoltage = BoardUtils::getVoltage();
+
+    sprintf(buffer, "%.2fv", boardVoltage);
+
+    log_d("Board voltage : %s", buffer);
+
+    display->setTextSize(2);
+    display->setTextColor(TFT_RED, TFT_BLACK);
+    display->drawString(
+        String(buffer),
+        10,
+        TFT_HEIGHT - 10
+    );
+
+    return true;
 };
 
-template <> void ViewPageSleep<TFT_eSPI>::draw(TFT_eSPI* display) {
+template <> bool ViewPageSleep<TFT_eSPI>::draw(TFT_eSPI* display) {
     for (uint8_t i = 0; i < 3; i++)
     {
         uint8_t n = 100;
@@ -489,6 +518,8 @@ template <> void ViewPageSleep<TFT_eSPI>::draw(TFT_eSPI* display) {
     }
 
     display->fillScreen(TFT_BLACK);
+
+    return true;
 };
 
 #endif
