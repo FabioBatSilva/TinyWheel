@@ -4,29 +4,32 @@
 #include <View.h>
 #include <Wheel.h>
 #include <MonitorApp.h>
+#include <BoardUtils.h>
 #include <WheelCharacteristic.h>
 
 #if DEVICE_UI == DEVICE_UI_TFT
+    #include <TFT_eSPI.h>
 
-#include <TFT_eSPI.h>
+    #define D_TYPE TFT_eSPI
+
+    template<> TFT_eSPI MonitorApp<D_TYPE>::UI::display = TFT_eSPI();
+    template<> View<D_TYPE> MonitorApp<D_TYPE>::UI::view = View<D_TYPE>(&MonitorApp<D_TYPE>::UI::display);
+#else
+    #error "Unknown DEVICE_UI."
+#endif
 
 template<> uint8_t MonitorApp<TFT_eSPI>::page = VIEW_PAGE_SPEED;
 
-template<> TFT_eSPI MonitorApp<TFT_eSPI>::UI::display = TFT_eSPI();
-template<> View<TFT_eSPI> MonitorApp<TFT_eSPI>::UI::view = View<TFT_eSPI>(&MonitorApp<TFT_eSPI>::UI::display);
+template<> ViewPageHome<D_TYPE> MonitorApp<D_TYPE>::UI::viewPageHome = ViewPageHome<D_TYPE>();
+template<> ViewPageSleep<D_TYPE> MonitorApp<D_TYPE>::UI::viewPageSleep = ViewPageSleep<D_TYPE>();
+template<> ViewPageSpeed<D_TYPE> MonitorApp<D_TYPE>::UI::viewPageSpeed = ViewPageSpeed<D_TYPE>();
+template<> ViewPageBattery<D_TYPE> MonitorApp<D_TYPE>::UI::viewPageBattery = ViewPageBattery<D_TYPE>();
+template<> ViewPageConnecting<D_TYPE> MonitorApp<D_TYPE>::UI::viewPageConnecting = ViewPageConnecting<D_TYPE>();
 
-template<> ViewPageHome<TFT_eSPI> MonitorApp<TFT_eSPI>::UI::viewPageHome = ViewPageHome<TFT_eSPI>();
-template<> ViewPageSleep<TFT_eSPI> MonitorApp<TFT_eSPI>::UI::viewPageSleep = ViewPageSleep<TFT_eSPI>();
-template<> ViewPageSpeed<TFT_eSPI> MonitorApp<TFT_eSPI>::UI::viewPageSpeed = ViewPageSpeed<TFT_eSPI>();
-template<> ViewPageBattery<TFT_eSPI> MonitorApp<TFT_eSPI>::UI::viewPageBattery = ViewPageBattery<TFT_eSPI>();
-template<> ViewPageConnecting<TFT_eSPI> MonitorApp<TFT_eSPI>::UI::viewPageConnecting = ViewPageConnecting<TFT_eSPI>();
-
-template<> void MonitorApp<TFT_eSPI>::init() {
+template<> void MonitorApp<D_TYPE>::init() {
     log_i("Init TinyWheel Monitor");
 
-    MonitorApp<TFT_eSPI>::UI* ui = &MonitorApp<TFT_eSPI>::ui;
-
-    ui->view.draw(&ui->viewPageHome);
+    ui.view.draw(&ui.viewPageHome);
 
     Wheel::init(
         WheelInfo(
@@ -41,19 +44,55 @@ template<> void MonitorApp<TFT_eSPI>::init() {
     );
 };
 
-template<> void MonitorApp<TFT_eSPI>::sleep() {
+template<> void MonitorApp<D_TYPE>::sleep() {
     log_i("Going to sleep");
 
-    MonitorApp<TFT_eSPI>::UI* ui = &MonitorApp<TFT_eSPI>::ui;
-
-    ui->view.draw(&ui->viewPageSleep);
+    ui.view.draw(&ui.viewPageSleep);
     delay(2000);
 
-    pinMode(39, GPIO_MODE_INPUT);
-
-    esp_sleep_enable_ext1_wakeup(GPIO_SEL_33 | GPIO_SEL_39, ESP_EXT1_WAKEUP_ANY_HIGH);
-    esp_deep_sleep_disable_rom_logging();
-    esp_deep_sleep_start();
+    startDeepSleep();
 };
 
-#endif
+template<> void MonitorApp<D_TYPE>::loop() {
+    preLoop();
+
+    Wheel::Status status = Wheel::loop();
+    Wheel::Values* values = Wheel::values();
+
+    if (Wheel::connectFails() > WHEEL_MAX_CONNECT_FAILURE) {
+        log_e("Failed to connect %d times.", WHEEL_MAX_CONNECT_FAILURE);
+        sleep();
+    }
+
+    if (status == Wheel::Status::CONNECTING || status == Wheel::Status::DISCONNECTED) {
+        log_d("Not ready yet : %s", Wheel::toString(status).c_str());
+
+        ui.view.draw(&ui.viewPageConnecting);
+
+        return;
+    }
+
+    if (status != Wheel::Status::CONNECTED) {
+        log_e("Invalid status %s.", Wheel::toString(status).c_str());
+
+        return;
+    }
+
+    switch (page)
+    {
+        case VIEW_PAGE_SPEED:
+            ui.view.update(&ui.viewPageSpeed, values);
+            break;
+        case VIEW_PAGE_BATTERY:
+            ui.view.update(&ui.viewPageBattery, values);
+            break;
+        case VIEW_PAGE_HOME:
+            ui.view.draw(&ui.viewPageHome);
+            break;
+        default:
+            log_e("Invalid page %d.", page);
+            break;
+    }
+
+    delay(100);
+};

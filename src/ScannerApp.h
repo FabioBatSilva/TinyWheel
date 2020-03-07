@@ -6,6 +6,10 @@
 #include <View.h>
 #include <WheelDevice.h>
 
+#ifndef WHEEL_MAX_SCANS
+    #define WHEEL_MAX_SCANS 10
+#endif
+
 template<class D>
 class ScannerApp
 {
@@ -23,13 +27,17 @@ class ScannerApp
             static ViewPageConnecting<D> viewPageConnecting;
         };
 
-        static WheelDeviceScanner scanner;
-
         static ScannerApp<D>::UI ui;
 
-        static std::string key;
+        static unsigned long scanCount;
+
+        static WheelDeviceScanner scanner;
 
         static void onScanResult(std::vector<WheelInfo> result);
+
+        static void startDeepSleep();
+
+        static void preLoop();
 
     public:
         static void setup();

@@ -84,13 +84,13 @@ void drawSpeedValue(TFT_eSPI* display, uint8_t speed) {
 
     display->drawChar(
         buffer[0],
-        2 + (display->width() - VIEW_TWRISTBAND_ICON_WIDTH) / 2,
+        2 + (TFT_WIDTH - VIEW_TWRISTBAND_ICON_WIDTH) / 2,
         VIEW_TWRISTBAND_ICON_HEIGHT
     );
 
     display->drawChar(
         buffer[1],
-        2 + (display->width() - VIEW_TWRISTBAND_ICON_WIDTH) / 2,
+        2 + (TFT_WIDTH - VIEW_TWRISTBAND_ICON_WIDTH) / 2,
         VIEW_TWRISTBAND_ICON_HEIGHT + 60
     );
 };
@@ -152,7 +152,7 @@ void drawBatteryValue(TFT_eSPI* display, uint8_t percentage) {
 
 void drawIcon(TFT_eSPI* display, const uint8_t *bitmap) {
     display->drawBitmap(
-        (display->width() - VIEW_TWRISTBAND_ICON_WIDTH) / 2,
+        (TFT_WIDTH - VIEW_TWRISTBAND_ICON_WIDTH) / 2,
         0,
         bitmap,
         VIEW_TWRISTBAND_ICON_WIDTH,
@@ -245,14 +245,14 @@ template <> void ViewPageHome<TFT_eSPI>::draw(TFT_eSPI* display) {
     drawVerticalText(
         display,
         "Tiny",
-        4 + (display->width() - VIEW_TWRISTBAND_ICON_WIDTH) / 2,
+        4 + (TFT_WIDTH - VIEW_TWRISTBAND_ICON_WIDTH) / 2,
         10 + VIEW_TWRISTBAND_ICON_HEIGHT
     );
 
     drawVerticalText(
         display,
         "Wheel",
-        30 + (display->width() - VIEW_TWRISTBAND_ICON_WIDTH) / 2,
+        30 + (TFT_WIDTH - VIEW_TWRISTBAND_ICON_WIDTH) / 2,
         10 + VIEW_TWRISTBAND_ICON_HEIGHT
     );
 };
