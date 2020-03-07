@@ -143,9 +143,9 @@ If everyting was sucessfull the project will compile and upload to the wristband
 - [x] BLE abstraction to talk to the wheel
 - [x] Display battery percentage
 - [x] Display speed
+- [x] Display wristband battery
 - [ ] XR support
 - [ ] Support for Imperial Units
-- [ ] Display wristband battery
 - [ ] Invoke activation from TinyWheel on APP_SCANNER mode
 - [ ] Display info about the current ride
 - [ ] Alerts on low battery and max speed

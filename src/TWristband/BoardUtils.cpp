@@ -9,6 +9,12 @@ template<> void BoardUtils::setup<TFT_eSPI>(TFT_eSPI* display) {
     display->setSwapBytes(true);
     display->fillScreen(TFT_BLACK);
 
+    // Backlight configuration
+    // PWM with about 72% duty.
+    ledcSetup(0, 5000, 8);
+    ledcAttachPin(TFT_BL, 0);
+    ledcWrite(0, 185);
+
     pinMode(TP_PWR_PIN, PULLUP);
     digitalWrite(TP_PWR_PIN, HIGH);
 };
