@@ -9,8 +9,8 @@
 #define VIEW_PAGE_HOME 1
 #define VIEW_PAGE_SPEED 2
 #define VIEW_PAGE_SLEEP 3
-#define VIEW_PAGE_BATTERY 3
-#define VIEW_PAGE_CONNECTING 4
+#define VIEW_PAGE_BATTERY 4
+#define VIEW_PAGE_CONNECTING 5
 
 template <class D>
 class ViewPage
@@ -22,9 +22,9 @@ class ViewPage
 
         virtual const uint8_t id() = 0;
 
-        virtual void draw(D* display) = 0;
+        virtual bool draw(D* display) = 0;
 
-        virtual void update(D* display, Wheel::Values* values) = 0;
+        virtual bool update(D* display, Wheel::Values* values) = 0;
 
         virtual const std::vector<std::string> characteristics() = 0;
 };
@@ -39,9 +39,11 @@ class ViewPageHome : public ViewPage<D>
             return VIEW_PAGE_HOME;
         };
 
-        void draw(D* display);
+        bool draw(D* display);
 
-        void update(D* display, Wheel::Values* values) {};
+        bool update(D* display, Wheel::Values* values) {
+            return true;
+        }
 
         const std::vector<std::string> characteristics() {
             return {};
@@ -58,9 +60,11 @@ class ViewPageSleep : public ViewPage<D>
             return VIEW_PAGE_SLEEP;
         };
 
-        void draw(D* display);
+        bool draw(D* display);
 
-        void update(D* display, Wheel::Values* values) {};
+        bool update(D* display, Wheel::Values* values) {
+            return true;
+        }
 
         const std::vector<std::string> characteristics() {
             return {};
@@ -77,9 +81,9 @@ class ViewPageSpeed : public ViewPage<D>
             return VIEW_PAGE_SPEED;
         };
 
-        void draw(D* display);
+        bool draw(D* display);
 
-        void update(D* display, Wheel::Values* values);
+        bool update(D* display, Wheel::Values* values);
 
         const std::vector<std::string> characteristics() {
             return {
@@ -98,9 +102,9 @@ class ViewPageBattery : public ViewPage<D>
             return VIEW_PAGE_BATTERY;
         };
 
-        void draw(D* display);
+        bool draw(D* display);
 
-        void update(D* display, Wheel::Values* values);
+        bool update(D* display, Wheel::Values* values);
 
         const std::vector<std::string> characteristics() {
             return {
@@ -119,9 +123,11 @@ class ViewPageConnecting : public ViewPage<D>
             return VIEW_PAGE_CONNECTING;
         };
 
-        void draw(D* display);
+        bool draw(D* display);
 
-        void update(D* display, Wheel::Values* values) {}
+        bool update(D* display, Wheel::Values* values) {
+            return true;
+        }
 
         const std::vector<std::string> characteristics() {
             return {};
@@ -132,25 +138,25 @@ template <class D>
 class View
 {
     protected:
-        uint8_t currentPage = -1;
+        uint8_t currentPage;
 
         D* display;
 
     public:
-        View(D* display) {
-            this->display = display;
-        }
+        View(D* display):
+            currentPage(-1),
+            display(display) { }
 
         void draw(ViewPage<D>* page) {
             if (this->currentPage != page->id()) {
                 // force pages to draw.
                 page->lastChange = 0;
+                this->currentPage = page->id();
             }
 
-            page->draw(this->display);
-
-            this->currentPage = page->id();
-            page->lastChange = millis();
+            if (page->draw(this->display)) {
+                page->lastChange = millis();
+            }
         };
 
         void update(ViewPage<D>* page, Wheel::Values* values) {
@@ -175,9 +181,11 @@ class View
             }
 
             // update if any value changed or if is the first time in this page
-            if (changed || page->lastChange == 0) {
-                page->update(this->display, values);
+            if (!changed && page->lastChange > 0) {
+                return;
+            }
 
+            if (page->update(this->display, values)) {
                 page->lastChange = timestamp;
             }
         };

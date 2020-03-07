@@ -20,24 +20,34 @@ namespace ViewTest
 
             unsigned long updateCalls;
 
+            bool drawCallReturn = true;
+
+            bool updateCallReturn = true;
+
             const std::vector<std::string> mCharacteristics;
 
             ViewPageMock(uint8_t const id, std::vector<std::string> characteristics):
                 mId(id),
                 drawCalls(0),
                 updateCalls(0),
+                drawCallReturn(true),
+                updateCallReturn(true),
                 mCharacteristics(characteristics) {}
 
             uint8_t const id() override {
                 return mId;
             };
 
-            void draw(D* display) {
+            bool draw(D* display) {
                 this->drawCalls ++;
+
+                return this->drawCallReturn;
             }
 
-            void update(D* display, Wheel::Values* values) {
+            bool update(D* display, Wheel::Values* values) {
                 this->updateCalls ++;
+
+                return this->updateCallReturn;
             }
 
             const std::vector<std::string> characteristics() {
@@ -175,8 +185,103 @@ namespace ViewTest
         TEST_ASSERT_GREATER_THAN(previusChange, viewPageMock1.lastChange);
     }
 
+    void test_draw_last_change(void)
+    {
+        UI_DISPLAY display;
+
+        View<UI_DISPLAY> view(&display);
+
+        ViewPageMock<UI_DISPLAY> viewPageMock(1, {});
+
+        TEST_ASSERT_EQUAL(0, viewPageMock.drawCalls);
+        TEST_ASSERT_TRUE(viewPageMock.drawCallReturn);
+        TEST_ASSERT_TRUE(viewPageMock.updateCallReturn);
+
+        // call it firt time
+        view.draw(&viewPageMock);
+
+        long previusChange = viewPageMock.lastChange;
+
+        TEST_ASSERT_EQUAL(1, viewPageMock.drawCalls);
+        TEST_ASSERT_GREATER_THAN_INT(0, viewPageMock.lastChange);
+
+        // force delay to ensure millis() is going to change
+        delay(1);
+
+        // page won't change
+        viewPageMock.drawCallReturn = false;
+
+        view.draw(&viewPageMock);
+
+        TEST_ASSERT_EQUAL(2, viewPageMock.drawCalls);
+        // no changes here.
+        TEST_ASSERT_EQUAL(previusChange, viewPageMock.lastChange);
+
+        // force delay
+        delay(1);
+
+        // page shoud change.
+        viewPageMock.drawCallReturn = true;
+
+        view.draw(&viewPageMock);
+
+        TEST_ASSERT_EQUAL(3, viewPageMock.drawCalls);
+        // should update the last change value.
+        TEST_ASSERT_GREATER_THAN(previusChange, viewPageMock.lastChange);
+    }
+
+    void test_update_last_change(void)
+    {
+        UI_DISPLAY display;
+
+        View<UI_DISPLAY> view(&display);
+
+        ViewPageMock<UI_DISPLAY> viewPageMock(1, {});
+
+        TEST_ASSERT_EQUAL(0, viewPageMock.drawCalls);
+        TEST_ASSERT_TRUE(viewPageMock.drawCallReturn);
+        TEST_ASSERT_TRUE(viewPageMock.updateCallReturn);
+
+        // call update firt time
+        view.update(&viewPageMock, Wheel::values());
+
+        long previusChange = viewPageMock.lastChange;
+
+        TEST_ASSERT_EQUAL(1, viewPageMock.drawCalls);
+        TEST_ASSERT_EQUAL(1, viewPageMock.updateCalls);
+        TEST_ASSERT_GREATER_THAN_INT(0, viewPageMock.lastChange);
+
+        // force delay to ensure millis() is going to change
+        delay(1);
+
+        // page won't change
+        viewPageMock.updateCallReturn = false;
+
+        view.update(&viewPageMock, Wheel::values());
+
+        TEST_ASSERT_EQUAL(1, viewPageMock.drawCalls);
+        TEST_ASSERT_EQUAL(2, viewPageMock.updateCalls);
+        // no changes here.
+        TEST_ASSERT_EQUAL(previusChange, viewPageMock.lastChange);
+
+        // force delay
+        delay(1);
+
+        // page shoud change.
+        viewPageMock.updateCallReturn = true;
+
+        view.update(&viewPageMock, Wheel::values());
+
+        TEST_ASSERT_EQUAL(1, viewPageMock.drawCalls);
+        TEST_ASSERT_EQUAL(3, viewPageMock.updateCalls);
+        // should update the last change value.
+        TEST_ASSERT_GREATER_THAN(previusChange, viewPageMock.lastChange);
+    }
+
     void run_tests() {
         RUN_TEST(ViewTest::test_draw);
         RUN_TEST(ViewTest::test_update);
+        RUN_TEST(ViewTest::test_draw_last_change);
+        RUN_TEST(ViewTest::test_update_last_change);
     }
 }
