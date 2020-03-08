@@ -280,7 +280,7 @@ template <> bool ViewPageHome<TFT_eSPI>::draw(TFT_eSPI* display) {
     const uint8_t voltageBarWidth = voltageW - 2 * voltageMargin;
     const uint8_t voltageBarHeight = voltageH - 2 * voltageMargin;
 
-    log_d("Board Percentage : %s", voltagePerc);
+    log_d("Board Percentage : %u", voltagePerc);
 
     if (voltagePerc < 30) {
         voltageColor = TFT_YELLOW;
