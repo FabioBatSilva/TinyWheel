@@ -121,7 +121,7 @@ WheelHandshake::State WheelHandshake::run(BLEClient* client, WheelInfo* info) {
     std::string key = info->key;
     std::vector<uint8_t> bytes = WheelUtils::hexStringToBytes(&key);
 
-    log_d("Writing api key %s to wheel", apiKey.c_str());
+    log_d("Writing api key %s to wheel", key.c_str());
     if (!WheelCharacteristic::write(client, WHEEL_CHARACTERISTIC_UART_SERIAL_WRITE_UUID, bytes.data(), bytes.size())) {
         log_e("Failed to write api");
 
